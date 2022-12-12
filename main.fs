@@ -18,14 +18,14 @@ variable yPos
 : clear-screen page ;
 : newline 10 emit ;
 
-: renderLine ( line len -- )
+: renderLineWithoutPlayer ( line len -- )
   type newline ;
 
-: renderLineWithPlayer ( position line len -- )
-  { position line len }
-  line position 1 - type
+: renderLineWithPlayer ( line len -- )
+  { line len }
+  line xPos @ 1 - type
     ." P"
-  line position + len position - type newline ;
+  line xPos @ + len xPos @ - type newline ;
 
 : banner-screen ( -- )
   clear-screen
@@ -46,40 +46,39 @@ variable yPos
   { x y }
     key
     case
-      119 of x y 1 + endof  \ W
+      119 of x y 1 - endof  \ W
       97 of x 1 - y endof   \ A
-      115 of x y 1 - endof  \ S
+      115 of x y 1 + endof  \ S
       100 of x 1 + y endof  \ D
     endcase ;
 
+: renderLine ( line len index -- )
+  yPos @ = if
+        renderLineWithPlayer
+      else
+        renderLineWithoutPlayer
+      endif ;
+
+: renderGame ( -- )
+  line1 1 renderLine
+  line2 2 renderLine
+  line3 3 renderLine
+  line4 4 renderLine
+  line5 5 renderLine 
+  line6 6 renderLine
+  line7 7 renderLine 
+  newline ;
+
 : gameLoop ( -- )
+  renderGame
   begin
     xPos @ yPos @
     movePlayer
     yPos ! xPos ! 
 
-    line1 renderLine
-    line2 renderLine
-    line3 renderLine
-    line4 renderLine
-    line5 renderLine 
-    xPos @ line6
-    renderLineWithPlayer
-    line7 renderLine 
+    renderGame
   again ;
 
-: renderGame ( -- )
-  line1 lines @ .s drop drop
-
-  5 begin
-    \ dup yPos @ = if
-      dup lines swap cells + @ .s      \ stack: counter, xPos, line, length
-      renderLine
-    \ endif
-    1 1 =
-  until ;
-    
-\ dup xPos @ swap .s            \ stack: counter, xPos, counter
 
 \ Starting Logic 
 
@@ -89,17 +88,4 @@ banner-screen
 ." success"
 newline
 
-line1 renderLine
-line2 renderLine
-line3 renderLine
-line4 renderLine
-line5 renderLine 
-xPos @ line6
-renderLineWithPlayer
-line7 renderLine
-
-renderGame
-
-\ gameLoop
-
-
+gameLoop
