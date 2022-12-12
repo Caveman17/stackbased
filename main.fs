@@ -1,5 +1,5 @@
 : clear-screen page ;
-: print-nl 10 emit ;
+: newline 10 emit ;
 
 : blank-gamefield ( x y -- )
   2 -
@@ -13,14 +13,27 @@
 
 : banner-screen ( -- )
   clear-screen
-
-  form ( height width )
-  2 / swap 2 /
-  blank-gamefield
-  print-nl print-nl print-nl
-  ."     "
+  ." Welcome to ForthMaze"
+  newline
+  ." Press S + Enter to start"
   ;
+
+: check-keypress ( x -- )
+  begin
+      key
+      over =
+    until
+  drop ;
 
 clear-screen
 banner-screen
+98 check-keypress
+." success"
+
+
+      
+
+
+
+
 
