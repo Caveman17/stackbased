@@ -15,7 +15,7 @@
   clear-screen
   ." Welcome to ForthMaze"
   newline
-  ." Press S + Enter to start"
+  ." Press s + Enter to start"
   ;
 
 : check-keypress ( x -- )
@@ -27,8 +27,9 @@
 
 clear-screen
 banner-screen
-98 check-keypress
+115 check-keypress
 ." success"
+newline
 
 
       
