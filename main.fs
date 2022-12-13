@@ -49,7 +49,7 @@ variable yPos
 : renderLineWithPlayer ( c-addr u -- )
   { line len }
   line xPos @ 1 - type
-    ." P"
+    ." >"
   line xPos @ + len xPos @ - type newline ;
   
 : renderLine ( c-addr u1 u2 -- )
