@@ -13,34 +13,25 @@ variable yPos
 1 yPos !
 
 \ create lines 
-\  line7 , line6 , line5 , line4 , line3 , line2 , line1 ,
+\ line7 , line6 , line5 , line4 , line3 , line2 , line1 ,
 
-: clear-screen page ;
+: clearScreen page ;
 : newline 10 emit ;
 
-: renderLineWithoutPlayer ( c-addr u -- )
-  type newline ;
-
-: renderLineWithPlayer ( c-addr u -- )
-  { line len }
-  line xPos @ 1 - type
-    ." P"
-  line xPos @ + len xPos @ - type newline ;
-
-: banner-screen ( -- )
-  clear-screen
-  ." Welcome to ForthMaze"
-  newline
-  ." Press s + Enter to start"
-  ;
-
-
-: check-keypress ( u -- )
+: checkKeypress ( u -- )
   begin
       key
       over =
     until
   drop ;
+
+: startScreen ( -- )
+  ." Welcome to ForthMaze" newline
+  ." Press s + Enter to start"
+  115 checkKeypress
+  ." success"
+  newline
+  ;
 
 : movePlayer ( u1 u2 -- u1 u2 )
   { x y }
@@ -52,6 +43,15 @@ variable yPos
       100 of x 1 + y endof  \ D
     endcase ;
 
+: renderLineWithoutPlayer ( c-addr u -- )
+  type newline ;
+
+: renderLineWithPlayer ( c-addr u -- )
+  { line len }
+  line xPos @ 1 - type
+    ." P"
+  line xPos @ + len xPos @ - type newline ;
+  
 : renderLine ( c-addr u1 u2 -- )
   yPos @ = if
         renderLineWithPlayer
@@ -82,10 +82,7 @@ variable yPos
 
 \ Starting Logic 
 
-clear-screen
-banner-screen
-115 check-keypress
-." success"
-newline
+clearScreen
+startScreen
 
 gameLoop
