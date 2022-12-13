@@ -18,10 +18,10 @@ variable yPos
 : clear-screen page ;
 : newline 10 emit ;
 
-: renderLineWithoutPlayer ( line len -- )
+: renderLineWithoutPlayer ( c-addr u -- )
   type newline ;
 
-: renderLineWithPlayer ( line len -- )
+: renderLineWithPlayer ( c-addr u -- )
   { line len }
   line xPos @ 1 - type
     ." P"
@@ -35,14 +35,14 @@ variable yPos
   ;
 
 
-: check-keypress ( x -- )
+: check-keypress ( u -- )
   begin
       key
       over =
     until
   drop ;
 
-: movePlayer ( x y -- x y )
+: movePlayer ( u1 u2 -- u1 u2 )
   { x y }
     key
     case
@@ -52,7 +52,7 @@ variable yPos
       100 of x 1 + y endof  \ D
     endcase ;
 
-: renderLine ( line len index -- )
+: renderLine ( c-addr u1 u2 -- )
   yPos @ = if
         renderLineWithPlayer
       else
