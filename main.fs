@@ -1,6 +1,6 @@
 \ Maze definition
 : line1 s" |------------------------------|" ;
-: line2 s" |>  |--------------------------|" ;
+: line2 s" |   |--------------------------|" ;
 : line3 s" |-| |---|        |-------------|" ;
 : line4 s" |-|       |-----|       |------|" ;
 : line5 s" |-| |-----------| |---|        F" ;
@@ -9,8 +9,8 @@
 
 variable xPos
 variable yPos
-10 xPos !
-2 yPos !
+2 xPos !
+1 yPos !
 
 \ stringlength must not be saved, as it is static
 create lines 
@@ -36,16 +36,23 @@ variable lineCnt
   ." Welcome to ForthMaze" newline
   ." Press s + Enter to start"
   115 checkKeypress
-  ." success"
   newline
   ;
 
-: checkCollision ( u1 u2 -- u1 u2 f)  \ check if f is bool??
-  { x y }
+: winScreen ( -- )
+  ." Congratulations!" newline
+  ." You successfully escaped the maze!" newline
+  ." Press s + Enter to start a new game"
+  115 checkKeypress
+  newline
+  ;
+
+: checkCollision ( u1 u2 c -- u1 u2 f)  \ check if f is bool??, c for char??
+  { x y char }
     x y
     lines y cells + @       \ get line     
     x 1 - chars + c@        \ get character at position
-    32 =                    \ check if position is moveable
+    char =                    \ check if position is moveable
   ;
 
 : movePlayer ( u1 u2 -- u1 u2 )
@@ -57,9 +64,6 @@ variable lineCnt
       's' of x y 1 + endof
       'd' of x 1 + y endof
     endcase 
-    checkCollision invert if
-      drop drop x y
-    endif
     ;
 
 : renderLineWithoutPlayer ( c-addr u -- )
@@ -90,7 +94,17 @@ variable lineCnt
   begin
     xPos @ yPos @
     movePlayer
-    yPos ! xPos ! 
+
+    32 checkCollision invert if     \ check if field is movable
+      70 checkCollision if            \ check if player may have won
+        clearScreen winScreen
+        2 xPos ! 1 yPos !
+      else
+        drop drop
+      endif
+    else
+      yPos ! xPos !
+    endif
 
     renderGame
   again ;
