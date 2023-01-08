@@ -10,14 +10,17 @@
 variable xPos
 variable yPos
 10 xPos !
-1 yPos !
+2 yPos !
 
 \ stringlength must not be saved, as it is static
 create lines 
-  line7 drop , line6 drop , line5 drop , line4 drop , line3 drop , line2 drop , line1 drop , 
+  line1 drop , line2 drop , line3 drop , line4 drop , line5 drop , line6 drop , line7 drop , 
 
 variable lineLen
 32 lineLen !
+
+variable lineCnt
+7 lineCnt !
 
 : clearScreen page ;
 : newline 10 emit ;
@@ -37,21 +40,27 @@ variable lineLen
   newline
   ;
 
+: checkCollision ( u1 u2 -- u1 u2 f)  \ check if f is bool??
+  { x y }
+    x y
+    lines y cells + @       \ get line     
+    x 1 - chars + c@        \ get character at position
+    32 =                    \ check if position is moveable
+  ;
+
 : movePlayer ( u1 u2 -- u1 u2 )
   { x y }
     key
     case
-      'w' of x y 1 - endof  \ W
-      'a' of x 1 - y endof   \ A
-      's' of x y 1 + endof  \ S
-      'd' of x 1 + y endof  \ D
-    endcase ;
-
-: checkCollision ( u1 u2 -- u1 u2 f) \ check if f is bool??
-  { x y }
-
-
-  ;
+      'w' of x y 1 - endof
+      'a' of x 1 - y endof
+      's' of x y 1 + endof
+      'd' of x 1 + y endof
+    endcase 
+    checkCollision invert if
+      drop drop x y
+    endif
+    ;
 
 : renderLineWithoutPlayer ( c-addr u -- )
   type newline ;
@@ -62,6 +71,7 @@ variable lineLen
     ." >"
   line xPos @ + len xPos @ - type newline ;
   
+\ expects the line (addr + len) and the y-index of the line
 : renderLine ( c-addr u1 u2 -- )
   yPos @ = if
         renderLineWithPlayer
@@ -70,13 +80,9 @@ variable lineLen
       endif ;
 
 : renderGame ( -- )
-  line1 1 renderLine
-  line2 2 renderLine
-  line3 3 renderLine
-  line4 4 renderLine
-  line5 5 renderLine 
-  line6 6 renderLine
-  line7 7 renderLine 
+  lineCnt @ 0 u+do
+    lines i cells + @ lineLen @ i renderLine
+  loop
   newline ;
 
 : gameLoop ( -- )
@@ -95,4 +101,4 @@ variable lineLen
 clearScreen
 startScreen
 
-\ gameLoop
+gameLoop
