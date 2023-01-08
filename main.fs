@@ -12,8 +12,12 @@ variable yPos
 10 xPos !
 1 yPos !
 
-\ create lines 
-\ line7 , line6 , line5 , line4 , line3 , line2 , line1 ,
+\ stringlength must not be saved, as it is static
+create lines 
+  line7 drop , line6 drop , line5 drop , line4 drop , line3 drop , line2 drop , line1 drop , 
+
+variable lineLen
+32 lineLen !
 
 : clearScreen page ;
 : newline 10 emit ;
@@ -37,11 +41,17 @@ variable yPos
   { x y }
     key
     case
-      119 of x y 1 - endof  \ W
-      97 of x 1 - y endof   \ A
-      115 of x y 1 + endof  \ S
-      100 of x 1 + y endof  \ D
+      'w' of x y 1 - endof  \ W
+      'a' of x 1 - y endof   \ A
+      's' of x y 1 + endof  \ S
+      'd' of x 1 + y endof  \ D
     endcase ;
+
+: checkCollision ( u1 u2 -- u1 u2 f) \ check if f is bool??
+  { x y }
+
+
+  ;
 
 : renderLineWithoutPlayer ( c-addr u -- )
   type newline ;
@@ -85,4 +95,4 @@ variable yPos
 clearScreen
 startScreen
 
-gameLoop
+\ gameLoop
