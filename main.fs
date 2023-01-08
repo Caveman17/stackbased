@@ -62,13 +62,18 @@ variable lineCnt
 
 : movePlayer ( u1 u2 -- u1 u2 )
   { x y }
+    -1 \ control value create default case later
     key
     case
-      'w' of x y 1 - endof
-      'a' of x 1 - y endof
-      's' of x y 1 + endof
-      'd' of x 1 + y endof
+      'w' of drop x y 1 - 0 endof
+      'a' of drop x 1 - y 0 endof
+      's' of drop x y 1 + 0 endof
+      'd' of drop x 1 + y 0 endof
     endcase 
+    \ default case -> set old position
+    if 
+      x y 
+    endif
     ;
 
 : renderLineWithoutPlayer ( c-addr u -- )
