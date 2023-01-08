@@ -47,11 +47,16 @@ variable lineCnt
   newline
   ;
 
-: checkCollision ( u1 u2 c -- u1 u2 f)  \ check if f is bool??, c for char??
-  { x y char }
-    x y
+: getCharacterOfLine ( u1 u2 -- c )
+  { x y }
     lines y cells + @       \ get line     
     x 1 - chars + c@        \ get character at position
+;
+
+: checkCollision ( u1 u2 c -- u1 u2 f)  \ check if f is bool??, c for char??
+  { x y char }
+    x y x y
+    getCharacterOfLine
     char =                    \ check if position is moveable
   ;
 
@@ -89,24 +94,31 @@ variable lineCnt
   loop
   newline ;
 
-: gameLoop ( -- )
-  renderGame
-  begin
-    xPos @ yPos @
-    movePlayer
 
-    32 checkCollision invert if     \ check if field is movable
+
+: gameLoop ( -- )
+  clearScreen
+  renderGame
+
+  begin
+    xPos @ yPos @ movePlayer
+
+    xPos @ 1 - yPos @ at-xy
+    xPos @ yPos @ getCharacterOfLine emit     \ clear old position
+
+    32 checkCollision invert if       \ check if field is movable
       70 checkCollision if            \ check if player may have won
         clearScreen winScreen
         2 xPos ! 1 yPos !
-      else
-        drop drop
+        clearScreen renderGame
       endif
+      drop drop
     else
       yPos ! xPos !
     endif
 
-    renderGame
+    xPos @ 1 - yPos @ at-xy 62 emit        \ set new position
+    xPos @ 1 - yPos @ at-xy                \ set cursor to player position
   again ;
 
 
